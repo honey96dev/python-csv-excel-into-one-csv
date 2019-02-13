@@ -132,27 +132,31 @@ class MyWin(wx.Frame):
         return val[self.sortIndex]
 
     def on_btnAdd_clicked(self, event):
-        with wx.FileDialog(self, "Open XYZ file", wildcard="Supported Files (*.csv;*.xls;*.xlsx)|*.csv;*.xls;*.xlsx|" \
+        with wx.FileDialog(self, "Open transaction file(s)", wildcard="Supported Files (*.csv;*.xls;*.xlsx)|*.csv;*.xls;*.xlsx|" \
                                                         "Excel Files (*.xls;*.xlsx)|*.xls;*.xlsx|"\
                                                         "Comma-Separated Values Files (*.csv)|*.csv",
-                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE) as fileDialog:
 
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
+            if fileDialog.ShowModal() != wx.ID_OK:
                 return ''
 
-            fileName    = fileDialog.GetPath()
-            fileCnt     = self.list.GetItemCount()
-            ifAdded     = False
-            for i in range(0, fileCnt):
-                fileName1   = self.list.GetItem(i, 0).GetText()
-                if (fileName == fileName1):
-                    wx.MessageBox("This file is already appended", "Ops", wx.OK | wx.ICON_WARNING)
-                    ifAdded = True
+            paths = fileDialog.GetPaths()
+            for path in paths:
+                fileName    = path
+                print(fileName)
+                fileCnt     = self.list.GetItemCount()
+                ifAdded     = False
+                for i in range(0, fileCnt):
+                    fileName1   = self.list.GetItem(i, 0).GetText()
+                    if (fileName == fileName1):
+                        wx.MessageBox("This file is already appended", "Ops", wx.OK | wx.ICON_WARNING)
+                        ifAdded = True
 
-            if (ifAdded == False):
-                self.list.InsertItem(self.fileCnt, fileName)
-                self.fileCnt    += 1
+                if (ifAdded == False):
+                    self.list.InsertItem(self.fileCnt, fileName)
+                    self.fileCnt    += 1
 
+            fileDialog.Destroy()
 
     def on_btnRemove_clicked(self, event):
         if (self.list.GetSelectedItemCount() == 0):
